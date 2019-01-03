@@ -1,0 +1,11 @@
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+$primary_colour:#706dff;
+$secondary_colour:#ee9ca7;
+
+@include md-register-theme("default", (
+    primary: $primary_colour,
+    accent: $secondary_colour,
+    fieldvariant: $primary_colour, // The field error colour,
+));
+@import "~vue-material/dist/theme/all"; // Apply the theme
