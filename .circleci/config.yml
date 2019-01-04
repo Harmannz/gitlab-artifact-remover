@@ -25,12 +25,12 @@ workflows:
     jobs:
       - lint
       - build:
-        requires:
-          - lint
+          requires:
+            - lint
       - hold:
           type: approval
           requires:
-           - build
+            - build
       - release:
           requires:
             - hold
