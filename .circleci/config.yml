@@ -3,20 +3,32 @@ jobs:
   install:
     docker:
       - image: circleci/node:4.8.2
+    working_directory: ~/gitlab-artifact-remover
     steps:
       - checkout
       - run: npm install
-
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/gitlab-artifact-remover
   lint:
     docker:
       - image: circleci/node:4.8.2
+    working_directory: ~/gitlab-artifact-remover
     steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: npm run lint
 
   build:
     docker:
       - image: circleci/node:4.8.2
+    working_directory: ~/gitlab-artifact-remover
     steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: npm run build
 
   release:
