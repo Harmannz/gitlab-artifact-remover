@@ -29,7 +29,10 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - lint
+      - install
+      - lint:
+          requires:
+            - install
       - build:
           requires:
             - lint
