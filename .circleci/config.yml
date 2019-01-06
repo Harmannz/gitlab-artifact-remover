@@ -39,7 +39,7 @@ jobs:
 
 workflows:
   version: 2
-  build-test-and-deploy:
+  build:
     jobs:
       - install
       - lint:
@@ -47,11 +47,42 @@ workflows:
             - install
       - build:
           requires:
-            - lint
-      - hold:
+            - install
+      - hold-release:
           type: approval
           requires:
+            - lint
             - build
+          filters:
+            branches:
+              only:
+                - develop
       - release:
           requires:
-            - hold
+            - hold-release
+          filters:
+            branches:
+              only:
+                - develop
+
+# release: 
+# - update release version
+# - git commit -m "Release of version $RELEASE_VERSION to master"
+# - git tag -a $RELEASE_VERSION -m "tagging release $RELEASE_VERSION"
+# - git checkout head of master
+# - git merge release/$CI_JOB_ID
+# - git checkout head of develop
+# - git pull
+# - git merge master --no-ff -m "Merge master to develop after $RELEASE_VERSION"
+
+# - set to next snapshot version
+# - git add *pom.xml
+# - SNAPSHOT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f sample-project/pom.xml) 
+# - git commit -m "New development version $SNAPSHOT_VERSION"
+#   # Push after everything above has completed
+#   - git push origin develop
+#   - git push origin master
+#   - git push origin --tags
+#   only:
+#   - develop
+#   when: manual
