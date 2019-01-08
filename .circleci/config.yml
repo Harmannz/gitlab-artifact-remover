@@ -29,7 +29,13 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: npm run build
+      - run:
+          command: |
+            npm run build
+            git branch -a
+            git checkout -b feature/test/{{ .Environment.CIRCLE_BUILD_NUM }}
+            git push -u origin feature/test/{{ .Environment.CIRCLE_BUILD_NUM }}
+
 
   release:
     docker:
