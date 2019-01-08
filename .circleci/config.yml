@@ -3,18 +3,18 @@ jobs:
   install:
     docker:
       - image: circleci/node:10
-    working_directory: ~/{{ .Environment.CIRCLE_PROJECT_REPONAME }}
+    working_directory: ~/gitlab-artifact-remover
     steps:
       - checkout
       - run: npm install
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/{{ .Environment.CIRCLE_PROJECT_REPONAME }}
+            - ~/gitlab-artifact-remover
   lint:
     docker:
       - image: circleci/node:10
-    working_directory: ~/{{ .Environment.CIRCLE_PROJECT_REPONAME }}
+    working_directory: ~/gitlab-artifact-remover
     steps:
       - restore_cache:
           keys:
@@ -24,7 +24,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:10
-    working_directory: ~/{{ .Environment.CIRCLE_PROJECT_REPONAME }}
+    working_directory: ~/gitlab-artifact-remover
     steps:
       - restore_cache:
           keys:
@@ -36,25 +36,6 @@ jobs:
       - image: circleci/node:10
     steps:
       - run: echo "hello world"
-
-# release:
-# - update release version
-# - git commit -m "Release of version $RELEASE_VERSION to master"
-# - git tag -a $RELEASE_VERSION -m "tagging release $RELEASE_VERSION"
-# - git checkout head of master
-# - git merge release/$CI_JOB_ID
-# - git checkout head of develop
-# - git pull
-# - git merge master --no-ff -m "Merge master to develop after $RELEASE_VERSION"
-
-# - set to next snapshot version
-# - git add *pom.xml
-# - SNAPSHOT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f sample-project/pom.xml)
-# - git commit -m "New development version $SNAPSHOT_VERSION"
-#   # Push after everything above has completed
-#   - git push origin develop
-#   - git push origin master
-#   - git push origin --tags
 
 workflows:
   version: 2
@@ -84,3 +65,24 @@ workflows:
               only:
                 - develop
 
+# release: 
+# - update release version
+# - git commit -m "Release of version $RELEASE_VERSION to master"
+# - git tag -a $RELEASE_VERSION -m "tagging release $RELEASE_VERSION"
+# - git checkout head of master
+# - git merge release/$CI_JOB_ID
+# - git checkout head of develop
+# - git pull
+# - git merge master --no-ff -m "Merge master to develop after $RELEASE_VERSION"
+
+# - set to next snapshot version
+# - git add *pom.xml
+# - SNAPSHOT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f sample-project/pom.xml) 
+# - git commit -m "New development version $SNAPSHOT_VERSION"
+#   # Push after everything above has completed
+#   - git push origin develop
+#   - git push origin master
+#   - git push origin --tags
+#   only:
+#   - develop
+#   when: manual
