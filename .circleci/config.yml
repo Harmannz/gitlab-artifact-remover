@@ -29,6 +29,9 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - add_ssh_keys:
+          fingerprints:
+            - "42:7a:91:01:25:41:16:7a:73:9e:8f:b5:77:c2:32:e5"
       - run:
           command: |
             npm run build
