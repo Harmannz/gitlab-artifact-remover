@@ -69,10 +69,6 @@ workflows:
           requires:
             - lint
             - build
-          filters:
-            branches:
-              only:
-                - develop
       - release:
           requires:
             - hold-release
