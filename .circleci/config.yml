@@ -36,6 +36,7 @@ jobs:
             git checkout -b feature/test/$CIRCLE_BUILD_NUM
             mkdir -p ~/.ssh
             echo ssh-keyscan github.com >> ~/.ssh/known_hosts
+            cat ~/.ssh/known_hosts
             git push -u origin feature/test/$CIRCLE_BUILD_NUM
 
 
