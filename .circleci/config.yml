@@ -34,6 +34,7 @@ jobs:
             npm run build
             git branch -a
             git checkout -b feature/test/$CIRCLE_BUILD_NUM
+            echo ssh-keyscan github.com >> ~/.ssh/known_hosts
             git push -u origin feature/test/$CIRCLE_BUILD_NUM
 
 
