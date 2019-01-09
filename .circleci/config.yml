@@ -42,7 +42,8 @@ jobs:
             chmod 600 ~/.ssh/config
             ssh-keyscan -Ht rsa github.com >> ~/.ssh/known_hosts
             cat ~/.ssh/known_hosts
-            git push -u origin feature/test/$CIRCLE_BUILD_NUM
+            echo $CIRCLE_BRANCH
+            git push -u origin feature/test/$CIRCLE_BUILD_NUM --dry-run
 
 
   release:
