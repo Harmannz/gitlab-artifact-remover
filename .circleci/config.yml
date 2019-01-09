@@ -35,7 +35,9 @@ jobs:
             git branch -a
             git checkout -b feature/test/$CIRCLE_BUILD_NUM
             mkdir -p ~/.ssh
-            echo ssh-keyscan github.com >> ~/.ssh/known_hosts
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
+            chmod 600 ~/.ssh/config
+            ssh-keyscan -Ht rsa github.com >> ~/.ssh/known_hosts
             cat ~/.ssh/known_hosts
             git push -u origin feature/test/$CIRCLE_BUILD_NUM
 
