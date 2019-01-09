@@ -36,6 +36,7 @@ jobs:
           command: |
             npm run build
             git branch -a
+            git config --global user.name "$CIRCLE_USERNAME"
             git checkout -b feature/test/$CIRCLE_BUILD_NUM
             mkdir -p ~/.ssh
             echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
