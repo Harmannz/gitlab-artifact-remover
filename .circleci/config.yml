@@ -45,13 +45,14 @@ jobs:
             cat ~/.ssh/known_hosts
             echo $CIRCLE_BRANCH
             git push -u origin feature/test/$CIRCLE_BUILD_NUM --dry-run
-
-
   release:
     docker:
       - image: circleci/node:10
     steps:
-      - run: echo "hello world"
+      - run:
+          name: Skip this job for Pull Requests
+          command: '[[ -v CIRCLE_PR_NUMBER ]] && circleci step halt || true'
+      - run: echo "hello pull request"
 
 workflows:
   version: 2
@@ -64,18 +65,10 @@ workflows:
       - build:
           requires:
             - install
-      - hold-release:
-          type: approval
+      - release:
           requires:
             - lint
             - build
-      - release:
-          requires:
-            - hold-release
-          filters:
-            branches:
-              only:
-                - develop
 
 # release: 
 # - update release version
