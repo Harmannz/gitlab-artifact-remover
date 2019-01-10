@@ -58,6 +58,16 @@ jobs:
             echo 'export GIT_COMMIT_MSG=$(git log --format=oneline -n 1 $CIRCLE_SHA1)' >> $BASH_ENV
             source $BASH_ENV
       - run: echo $GIT_COMMIT_MSG
+      - run:
+          command: |
+            if [ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]; then
+                echo "A major version upgrade is performed"
+            elif [ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]; then
+                echo "A minor version upgrade is performed"
+            else
+                echo "A Bugfix is performed"
+            fi
+
 workflows:
   version: 2
   build:
