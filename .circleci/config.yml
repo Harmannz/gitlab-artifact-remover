@@ -60,9 +60,9 @@ jobs:
       - run: echo $GIT_COMMIT_MSG
       - run:
           command: |
-            if [ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]; then
+            if [[ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]]; then
                 echo "A major version upgrade is performed"
-            elif [ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]; then
+            elif [[ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]]; then
                 echo "A minor version upgrade is performed"
             else
                 echo "A Bugfix is performed"
