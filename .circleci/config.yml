@@ -40,9 +40,7 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/gitlab-artifact-remover
     steps:
-      - restore_cache:
-          keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run:
           command: |
             echo 'export GIT_COMMIT_MSG=$(git log --format=oneline -n 1 $CIRCLE_SHA1)' >> $BASH_ENV
