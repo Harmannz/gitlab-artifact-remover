@@ -35,16 +35,6 @@ jobs:
       - run:
           command: |
             npm run build
-            git branch -a
-            git config --global user.name "$CIRCLE_USERNAME"
-            git checkout -b feature/test/$CIRCLE_BUILD_NUM
-            mkdir -p ~/.ssh
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
-            chmod 600 ~/.ssh/config
-            ssh-keyscan -Ht rsa github.com >> ~/.ssh/known_hosts
-            cat ~/.ssh/known_hosts
-            echo $CIRCLE_BRANCH
-            git push -u origin feature/test/$CIRCLE_BUILD_NUM --dry-run
   release:
     docker:
       - image: circleci/node:10
@@ -57,16 +47,28 @@ jobs:
           command: |
             echo 'export GIT_COMMIT_MSG=$(git log --format=oneline -n 1 $CIRCLE_SHA1)' >> $BASH_ENV
             source $BASH_ENV
-      - run: echo $GIT_COMMIT_MSG
       - run:
           command: |
+            mkdir -p ~/.ssh
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
+            chmod 600 ~/.ssh/config
+            ssh-keyscan -Ht rsa github.com >> ~/.ssh/known_hosts
+      - run:
+          command: |
+            git checkout -b release/$CIRCLE_BUILD_NUM
+
             if [[ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]]; then
-                echo "A major version upgrade is performed"
+                npm version major -m "[skip ci] Release of major version %s to master"
             elif [[ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]]; then
-                echo "A minor version upgrade is performed"
+                npm version minor -m "[skip ci] Release of minor version %s to master"
             else
-                echo "A Bugfix is performed"
+                npm version patch -m "[skip ci] Release of patch version %s to master"
             fi
+
+            git checkout -b testbranch
+            git merge release/$CIRCLE_BUILD_NUM
+            git push origin testbranch
+            git push origin --tags
 
 workflows:
   version: 2
@@ -83,29 +85,7 @@ workflows:
           requires:
             - lint
             - build
-          # filters:
-          #   branches:
-          #     only: 
-          #       master
-
-# release: 
-# - update release version
-# - git commit -m "Release of version $RELEASE_VERSION to master"
-# - git tag -a $RELEASE_VERSION -m "tagging release $RELEASE_VERSION"
-# - git checkout head of master
-# - git merge release/$CI_JOB_ID
-# - git checkout head of develop
-# - git pull
-# - git merge master --no-ff -m "Merge master to develop after $RELEASE_VERSION"
-
-# - set to next snapshot version
-# - git add *pom.xml
-# - SNAPSHOT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f sample-project/pom.xml) 
-# - git commit -m "New development version $SNAPSHOT_VERSION"
-#   # Push after everything above has completed
-#   - git push origin develop
-#   - git push origin master
-#   - git push origin --tags
-#   only:
-#   - develop
-#   when: manual
+          filters:
+            branches:
+              only: 
+                feature/circleci
