@@ -50,10 +50,10 @@ jobs:
       - image: circleci/node:10
     steps:
       - run:
-          name: Skip this job for Pull Requests
-          command: '[[ -v CIRCLE_PR_NUMBER ]] && circleci step halt || true'
-      - run: echo "hello pull request"
-
+          command: |
+            echo 'export GIT_COMMIT_MSG=$(git log --format=oneline -n 1 $CIRCLE_SHA1)' >> $BASH_ENV
+            source $BASH_ENV
+      - run: echo $GIT_COMMIT_MSG
 workflows:
   version: 2
   build:
@@ -69,6 +69,10 @@ workflows:
           requires:
             - lint
             - build
+          # filters:
+          #   branches:
+          #     only: 
+          #       master
 
 # release: 
 # - update release version
