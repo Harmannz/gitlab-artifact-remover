@@ -69,7 +69,7 @@ jobs:
                 npm version patch -m "[skip ci] Release of patch version %s to master"
             fi
 
-            git checkout -b testbranch
+            git checkout testbranch
             git merge release/$CIRCLE_BUILD_NUM
             git push origin testbranch
             git push origin --tags
