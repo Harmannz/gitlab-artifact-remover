@@ -123,9 +123,4 @@ workflows:
                 master
       - pages:
           requires:
-            - lint
-            - build
-          filters:
-            branches:
-              only:
-                feature/ghpages
+            - release
