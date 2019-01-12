@@ -55,6 +55,7 @@ jobs:
             git config --global user.email "$botemail"
             git config --global user.name "$botusername"
       - run:
+          name: Release Project
           command: |
             git checkout -b release/$CIRCLE_BUILD_NUM
 
@@ -71,25 +72,11 @@ jobs:
             git merge release/$CIRCLE_BUILD_NUM
             git push origin master
             git push origin --tags
-
-  pages:
-    docker:
-      - image: circleci/node:10
-    working_directory: ~/gitlab-artifact-remover
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "42:7a:91:01:25:41:16:7a:73:9e:8f:b5:77:c2:32:e5"
-      - restore_cache:
-          keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
             sudo npm install -g --silent gh-pages
-            git config --global user.email "$botemail"
-            git config --global user.name "$botusername"
       - run: 
-          name: Build for production
+          name: Build for Production
           command: npm run build
       - run:
           name: Deploy site to gh-pages
@@ -114,11 +101,3 @@ workflows:
             branches:
               only: 
                 master
-      - pages:
-          requires:
-            - lint
-            - build
-          filters:
-            branches:
-              only:
-                feature/ghpages
