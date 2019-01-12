@@ -77,12 +77,15 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/gitlab-artifact-remover
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "42:7a:91:01:25:41:16:7a:73:9e:8f:b5:77:c2:32:e5"
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
-            npm install -g --silent gh-pages
+            npm install --silent gh-pages
             git config --global user.email "$botemail"
             git config --global user.name "$botusername"
       - run: 
@@ -112,5 +115,7 @@ workflows:
               only: 
                 master
       - pages:
-          requires:
-            - release
+          filters:
+            branches:
+              only:
+                feature/ghpages
