@@ -1,0 +1,93 @@
+version: 2
+jobs:
+  install:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/gitlab-artifact-remover
+    steps:
+      - checkout
+      - run: npm install
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/gitlab-artifact-remover
+  lint:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/gitlab-artifact-remover
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: npm run lint
+
+  build:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/gitlab-artifact-remover
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            npm run build
+  release:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/gitlab-artifact-remover
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "42:7a:91:01:25:41:16:7a:73:9e:8f:b5:77:c2:32:e5"
+      - checkout
+      - run:
+          command: |
+            echo 'export GIT_COMMIT_MSG=$(git log --format=oneline -n 1 $CIRCLE_SHA1)' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          command: |
+            mkdir -p ~/.ssh
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
+            chmod 600 ~/.ssh/config
+            ssh-keyscan -Ht rsa github.com >> ~/.ssh/known_hosts
+
+            git config --global user.email "$botemail"
+            git config --global user.name "$botusername"
+      - run:
+          command: |
+            git checkout -b release/$CIRCLE_BUILD_NUM
+
+            if [[ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]]; then
+                npm version major -m "[skip ci] Release of major version %s to master"
+            elif [[ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]]; then
+                npm version minor -m "[skip ci] Release of minor version %s to master"
+            else
+                npm version patch -m "[skip ci] Release of patch version %s to master"
+            fi
+
+            git checkout master
+            git pull
+            git merge release/$CIRCLE_BUILD_NUM
+            git push origin master
+            git push origin --tags
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - install
+      - lint:
+          requires:
+            - install
+      - build:
+          requires:
+            - install
+      - release:
+          requires:
+            - lint
+            - build
+          filters:
+            branches:
+              only: 
+                master
