@@ -115,6 +115,9 @@ workflows:
               only: 
                 master
       - pages:
+          requires:
+            - lint
+            - build
           filters:
             branches:
               only:
