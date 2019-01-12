@@ -85,7 +85,7 @@ jobs:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
-            npm install --silent gh-pages
+            sudo npm install -g --silent gh-pages
             git config --global user.email "$botemail"
             git config --global user.name "$botusername"
       - run: 
