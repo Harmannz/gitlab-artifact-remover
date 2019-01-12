@@ -68,7 +68,6 @@ jobs:
             fi
 
             git checkout master
-            git pull
             git merge release/$CIRCLE_BUILD_NUM
             git push origin master
             git push origin --tags
