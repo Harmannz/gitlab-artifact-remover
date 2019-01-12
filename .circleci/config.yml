@@ -72,6 +72,26 @@ jobs:
             git push origin master
             git push origin --tags
 
+  pages:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/gitlab-artifact-remover
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            npm install -g --silent gh-pages
+            git config --global user.email "$botemail"
+            git config --global user.name "$botusername"
+      - run: 
+          name: Build for production
+          command: npm run build
+      - run:
+          name: Deploy site to gh-pages
+          command: gh-pages --dist dist --message "[skip ci] Github Pages deployment"
+
 workflows:
   version: 2
   build:
@@ -91,3 +111,6 @@ workflows:
             branches:
               only: 
                 master
+      - pages:
+          requires:
+            - release
