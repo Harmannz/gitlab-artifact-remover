@@ -161,7 +161,9 @@ export default {
     buildRequest(jobId) {
       return axios.post(
         `https://${this.form.baseUrl}/api/v4/projects/${this.form.projectId}/jobs/${jobId}/erase`,
-        {},
+        {
+          rejectUnauthorized: false,
+        },
         {
           headers: {
             'PRIVATE-TOKEN': this.form.token,
