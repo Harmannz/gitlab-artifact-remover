@@ -1,4 +1,8 @@
 # gitlab-artifact-remover
+
+## Links
+[CI/CD](https://circleci.com/gh/Harmannz/workflows/gitlab-artifact-remover)
+
 ## Project setup
 ```
 npm install
