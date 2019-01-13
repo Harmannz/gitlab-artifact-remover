@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/gitlab-artifact-remover/precache-manifest.986111ae0f298f132183cd74e391bc75.js"
+  "/gitlab-artifact-remover/precache-manifest.eb9c358942a825d116e2bbdfb26dcaf0.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "gitlab-artifact-remover"});
