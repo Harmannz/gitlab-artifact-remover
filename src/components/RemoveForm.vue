@@ -4,7 +4,7 @@
       <form id="FormValidation" class="md-layout md-alignment-center-center"
         v-bind:class="{ invalidFormValidation: error}"
         novalidate @submit.prevent="validateFields">
-        <md-card md-with-hover class="md-layout-item md-size-66">
+        <md-card md-with-hover class="md-layout-item md-xlarge-size-33 md-size-66">
 
           <md-card-content>
             <div class="md-layout md-gutter">
@@ -158,6 +158,28 @@ export default {
     clearForm() {
       this.$v.$reset();
     },
+    async performARequest(jobId) {
+      try {
+        console.log(jobId);
+        const response = await axios.post(
+          `https://${this.form.baseUrl}/api/v4/projects/${this.form.projectId}/jobs/${jobId}/erase`,
+          {
+            rejectUnauthorized: false,
+          },
+          {
+            headers: {
+              'PRIVATE-TOKEN': this.form.token,
+            },
+          },
+        );
+        console.log('response success: ');
+        console.log(response);
+      } catch (error) {
+        console.log('response error: ');
+        console.error(error);
+        console.log(error.response.status);
+      }
+    },
     buildRequest(jobId) {
       return axios.post(
         `https://${this.form.baseUrl}/api/v4/projects/${this.form.projectId}/jobs/${jobId}/erase`,
@@ -171,6 +193,21 @@ export default {
         },
       );
     },
+    isSuccess() {
+      this.success = true;
+      this.deleting = false;
+      this.clearForm();
+    },
+    isFailure() {
+      this.error = true;
+      this.deleting = false;
+      this.clearForm();
+    },
+    async buildRequests() {
+      for (let i = this.form.startId; i <= this.form.endId; i += 1) {
+        await this.performARequest(i);
+      }
+    },
     deleteArtifacts() {
       // turn this into batch processing to sequentially handle large number of requests.
       this.deleting = true;
@@ -178,22 +215,19 @@ export default {
       this.success = false;
       // build requests array
       const requests = [];
-      for (let i = this.form.startId; i <= this.form.endId; i += 1) {
-        requests.push(this.buildRequest(i));
-      }
+      this.buildRequests();
+      // for (let i = this.form.startId; i <= this.form.endId; i += 1) {
+      //   requests.push(this.buildRequest(i));
+      // }
 
       // execute requests in parallel
       axios.all(requests)
         .then(axios.spread(() => {
           // do something with both responses
-          this.success = true;
-          this.deleting = false;
-          this.clearForm();
+          this.isSuccess();
         }))
         .catch(() => {
-          this.error = true;
-          this.deleting = false;
-          this.clearForm();
+          this.isFailure();
         });
     },
     validateFields() {
