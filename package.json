@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bluebird": "^3.5.3",
     "register-service-worker": "^1.0.0",
     "vue": "^2.5.22",
     "vue-longpress": "^1.0.2",

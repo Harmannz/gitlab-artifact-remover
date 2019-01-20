@@ -98,8 +98,9 @@ import { validationMixin } from 'vuelidate';
 import { numeric, required } from 'vuelidate/lib/validators';
 
 const axios = require('axios');
+const Promise = require('bluebird');
 
-const endIdGreaterThanOrEqualStartId = (value, vm) => vm.startId <= value;
+const greaterThanOrEqualToStartId = (value, vm) => vm.startId <= value;
 
 export default {
   components: {},
@@ -131,7 +132,7 @@ export default {
       endId: {
         required,
         numeric,
-        endIdGreaterThanOrEqualStartId,
+        greaterThanOrEqualToStartId,
       },
       projectId: {
         required,
@@ -158,29 +159,7 @@ export default {
     clearForm() {
       this.$v.$reset();
     },
-    async performARequest(jobId) {
-      try {
-        console.log(jobId);
-        const response = await axios.post(
-          `https://${this.form.baseUrl}/api/v4/projects/${this.form.projectId}/jobs/${jobId}/erase`,
-          {
-            rejectUnauthorized: false,
-          },
-          {
-            headers: {
-              'PRIVATE-TOKEN': this.form.token,
-            },
-          },
-        );
-        console.log('response success: ');
-        console.log(response);
-      } catch (error) {
-        console.log('response error: ');
-        console.error(error);
-        console.log(error.response.status);
-      }
-    },
-    buildRequest(jobId) {
+    deleteJobRequest(jobId) {
       return axios.post(
         `https://${this.form.baseUrl}/api/v4/projects/${this.form.projectId}/jobs/${jobId}/erase`,
         {
@@ -189,6 +168,11 @@ export default {
         {
           headers: {
             'PRIVATE-TOKEN': this.form.token,
+          },
+          validateStatus(status) {
+            // allow 404 and 403 status codes since when looping through the job ids,
+            // because a job may not exist (404) or may already be deleted (403)
+            return (status >= 200 && status < 300) || status === 404 || status === 403;
           },
         },
       );
@@ -203,29 +187,19 @@ export default {
       this.deleting = false;
       this.clearForm();
     },
-    async buildRequests() {
-      for (let i = this.form.startId; i <= this.form.endId; i += 1) {
-        await this.performARequest(i);
-      }
-    },
     deleteArtifacts() {
-      // turn this into batch processing to sequentially handle large number of requests.
       this.deleting = true;
       this.error = false;
       this.success = false;
-      // build requests array
-      const requests = [];
-      this.buildRequests();
-      // for (let i = this.form.startId; i <= this.form.endId; i += 1) {
-      //   requests.push(this.buildRequest(i));
-      // }
+      const jobs = [];
+      for (let i = this.form.startId; i <= this.form.endId; i += 1) {
+        jobs.push(i);
+      }
 
-      // execute requests in parallel
-      axios.all(requests)
-        .then(axios.spread(() => {
-          // do something with both responses
+      Promise.map(jobs, this.deleteJobRequest, { concurrency: 10 })
+        .then(() => {
           this.isSuccess();
-        }))
+        })
         .catch(() => {
           this.isFailure();
         });

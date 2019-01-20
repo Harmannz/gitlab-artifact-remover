@@ -1,7 +1,8 @@
 # gitlab-artifact-remover
 
 ## Links
-[CI/CD](https://circleci.com/gh/Harmannz/workflows/gitlab-artifact-remover)
+[CI/CD](https://circleci.com/gh/Harmannz/workflows/gitlab-artifact-remover)  
+[SITE](https://harmannz.github.io/gitlab-artifact-remover/)
 
 ## Project setup
 ```
