@@ -7,5 +7,5 @@ module.exports = {
       patterns: [path.resolve(__dirname, './src/styles/global.scss')],
     },
   },
-  baseUrl: '/gitlab-artifact-remover/',
+  publicPath: '/gitlab-artifact-remover/',
 };
