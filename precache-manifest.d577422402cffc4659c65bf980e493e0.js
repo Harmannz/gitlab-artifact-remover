@@ -8,11 +8,11 @@ self.__precacheManifest = [
     "url": "/gitlab-artifact-remover/js/chunk-vendors.148d08a5.js"
   },
   {
-    "revision": "665f99fddd7dda2fbb3f",
-    "url": "/gitlab-artifact-remover/js/app.575b719b.js"
+    "revision": "a1731e7f1c1445f8f80f",
+    "url": "/gitlab-artifact-remover/js/app.61c64c99.js"
   },
   {
-    "revision": "b8f0d824301849a1f40e35e358db7f28",
+    "revision": "e011d34636feaf2c21136ba4967b5e7a",
     "url": "/gitlab-artifact-remover/index.html"
   },
   {
@@ -20,7 +20,7 @@ self.__precacheManifest = [
     "url": "/gitlab-artifact-remover/css/chunk-vendors.3d52a018.css"
   },
   {
-    "revision": "665f99fddd7dda2fbb3f",
+    "revision": "a1731e7f1c1445f8f80f",
     "url": "/gitlab-artifact-remover/css/app.c22caf44.css"
   }
 ];
