@@ -102,8 +102,8 @@ jobs:
       - run:
           name: Deploy site to gh-pages
           command: | 
-            sudo npm install -g --silent gh-pages
-            gh-pages --dist dist --message "[skip ci] Github Pages deployment"
+            npm install --silent gh-pages
+            npx gh-pages --dist dist --message "[skip ci] Github Pages deployment"
 
 workflows:
   version: 2
