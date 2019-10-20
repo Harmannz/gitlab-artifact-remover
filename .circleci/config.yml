@@ -60,15 +60,23 @@ jobs:
             git checkout -b release/$CIRCLE_BUILD_NUM
 
             if [[ "$GIT_COMMIT_MSG" =~ \[+.*major.*\]+ ]]; then
-                npm version major -m "[skip ci] Release of major version %s to master"
+                npm version major -m "Release of major version %s to master"
             elif [[ "$GIT_COMMIT_MSG" =~ \[+.*minor.*\]+ ]]; then
-                npm version minor -m "[skip ci] Release of minor version %s to master"
+                npm version minor -m "Release of minor version %s to master"
             else
-                npm version patch -m "[skip ci] Release of patch version %s to master"
+                npm version patch -m "Release of patch version %s to master"
             fi
 
-            git checkout master
+            git checkout production
+            git fetch
             git merge release/$CIRCLE_BUILD_NUM
+
+            git checkout master
+            git fetch
+
+            git merge production --no-ff -m "[skip ci] merge production back into master"
+
+            git push origin production
             git push origin master
             git push origin --tags
   pages:
@@ -91,9 +99,6 @@ jobs:
             
             git config --global user.email "$botemail"
             git config --global user.name "$botusername"
-      - run: 
-          name: Build for production
-          command: npm run build
       - run:
           name: Deploy site to gh-pages
           command: | 
@@ -121,4 +126,9 @@ workflows:
                 master
       - pages:
           requires:
-            - release
+            - lint
+            - build
+          filters:
+            branches:
+              only:
+                production

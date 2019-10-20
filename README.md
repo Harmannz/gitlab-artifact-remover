@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Harmannz/gitlab-artifact-remover.svg?style=svg)](https://circleci.com/gh/Harmannz/gitlab-artifact-remover)
+
 # gitlab-artifact-remover
 
 ## Links
