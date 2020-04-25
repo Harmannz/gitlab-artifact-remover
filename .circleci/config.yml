@@ -73,7 +73,7 @@ jobs:
 
             git checkout production
             git fetch
-            git merge release/$CIRCLE_BUILD_NUM
+            git merge --ff release/$CIRCLE_BUILD_NUM
 
             git checkout master
             git fetch
