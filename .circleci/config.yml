@@ -73,12 +73,12 @@ jobs:
 
             git checkout production
             git fetch
-            git merge release/$CIRCLE_BUILD_NUM
+            git merge release/$CIRCLE_BUILD_NUM --log --no-edit
 
             git checkout master
             git fetch
 
-            git merge production --no-ff -m "[skip ci] merge production back into master"
+            git merge release/$CIRCLE_BUILD_NUM --no-ff -m "[skip ci] merge release back into master"
 
             git push origin production
             git push origin master
